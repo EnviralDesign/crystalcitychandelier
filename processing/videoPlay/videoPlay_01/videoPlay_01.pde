@@ -121,6 +121,9 @@ void draw() {
     timeCapture1 = millis();
   }
   
+  
+  /*
+  
   // iterate through all pixels in pixel array
   for(int pix = 0; pix < (width*height); pix++){
    
@@ -199,6 +202,10 @@ void draw() {
    teensy_6.write(vals_6);
    teensy_7.write(vals_7);
    teensy_8.write(vals_8);
+   
+   */
+   
+   writeToLeds(12);
 
   // If capture time is true, we print out our debug info. set captureTime to false above once script is ready to go into performance mode.
   if(captureTime){
