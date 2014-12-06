@@ -1,9 +1,9 @@
 void writeToLeds(int t0, int t1, int t2, int t3, int t4, int t5, int t6, int t7, int t8) {
   
   // Capturing time 1 for frame rate calculation..
-  if(captureTime){
+  //if(captureTime){
     timeCapture1 = millis();
-  }
+  //}
   
   // iterate through all pixels in pixel array
   for(int pix = 0; pix < (width*height); pix++){
@@ -69,9 +69,9 @@ void writeToLeds(int t0, int t1, int t2, int t3, int t4, int t5, int t6, int t7,
   }
   
   // Capturing time 2 for frame rate calculation..
-  if(captureTime){
+  //if(captureTime){
     timeCapture2 = millis();
-  }
+  //}
  
  
    // Write rgb value arrays to all teensy ports. If/else statement checks arguments to see which thread will process the serial sendin
@@ -102,9 +102,6 @@ void writeToLeds(int t0, int t1, int t2, int t3, int t4, int t5, int t6, int t7,
    if(t8 == 1){ teensy_8.write(vals_8); }
    //else if(t8 == 1) { println("Delegate teensy_8 to helper thread"); }
    
- if(captureTime){
-  timeCapture3 = millis();
-  }
    
 }
 
