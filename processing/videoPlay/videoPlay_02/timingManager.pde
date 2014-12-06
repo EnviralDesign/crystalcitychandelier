@@ -9,4 +9,8 @@ void updateTiming() {
   
   epoch = System.currentTimeMillis()/1000;
   
+  DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+  epoch = (epoch * sim_dt_speedMult) + sim_dt_timeOfffset;
+  simulatedDateTimeFormattedString = df.format(new Date( epoch * 1000 ));
+
 }

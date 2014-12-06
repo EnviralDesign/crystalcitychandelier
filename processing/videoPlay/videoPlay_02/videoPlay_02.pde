@@ -1,7 +1,8 @@
 import processing.video.*;
 import processing.serial.*;
-
-//// --- USER EDITABLE VARIABLES: ---
+import java.util.Date;
+import java.text.*;
+//// ------------------------------- USER EDITABLE VARIABLES:---------------------------------------------
 // Data variables:
 String[] ports = {"COM8","COM10","COM14","COM15","COM16","COM17","COM18","COM19","COM20"};
 
@@ -15,9 +16,23 @@ int dataChunkSize = 3;
 
 // Art variables:
 float maxBright = .5;
-//// ------------------------------------------------------------------------------------------------------
 
-//// --- INITIALIZATION VARIABLES: ---
+// Timing Variables;
+
+// integer multiplier to control passing of time in epoc mode. 
+//Int's are accurate enough since epoc is measuring in absolute seconds.
+int sim_dt_speedMult = 1;
+
+// to simulate a certain date or time set this offset to the appropriate offset in seconds. will be a big number. use epoc
+// calculator online to calculate epoc for a certain date.
+// 31536000 seconds = 1 year
+// 2628000 seconds = 1 month
+// 604800 seconds = 1 week
+// 86400 seconds = 1 day
+// 3600 seconds = 1 hour
+// 60 seconds = 1 minute
+int sim_dt_timeOfffset = -1000; 
+//// ---------------------------------------INITIALIZATION VARIABLES:---------------------------------------
 
 int totalLedCount = rows*columns;
 Movie myMovie;
@@ -69,9 +84,16 @@ int mo = month();  // Values from 1 - 12
 int y = year();   // 2003, 2004, 2005, etc.
 
 long epoch = 0; // this is set in debug manager - a sort of absolute time in seconds since jan 1970.
-// may or may not be useless.
 
-//// -----------------------------------------------------------------------------------------------------
+// Epoc time will be converted back to date time, after a speed multiplier has been applied to quickly
+// simulate changing of days / hours / months etc for animation swapping tests.
+
+String simulatedDateTimeFormattedString = "";
+int[] simulatedDateTime = {0,0,0,0,0,0}; 
+
+
+
+//// ---------------------------------------SETUP:---------------------------------------
 
 public void setup() {
   
@@ -106,13 +128,15 @@ public void setup() {
   
 }
 
-//// -----------------------------------------------------------------------------------------------------
+//// -----------------------------------DRAW-----------------------------------------------
 
 void draw() {
   
   updateVideo();
 
   writeToLeds(ep[0],ep[1],ep[2],ep[3],ep[4],ep[5],ep[6],ep[7],ep[8]);
+
+  updateTiming();
 
   printDebug();
   

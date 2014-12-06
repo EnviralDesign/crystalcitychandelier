@@ -32,9 +32,8 @@ void printDebug() {
       print(String.format("%.1f", ((float)frameTime_third / (float)frameTimeCumulativeHolder) * 100));
       print(" % - Serial time in ms:"); 
       println(timeCapture3 - timeCapture2);
-      println("-----------------");
-      print("Time since Epoch: ");
-      println(epoch);
+      println("----------------------------");
+      println("--Realtime Date Info--");
       print("Year: ");
       print(y);
       print(", Month: ");
@@ -47,6 +46,13 @@ void printDebug() {
       print(mi);
       print(", Second: ");
       println(s);
+      print("Time since Epoch: ");
+      println(epoch);
+      println("--Simulated Date Info--");
+      println(new Date( epoch * 1000 ));
+      println(simulatedDateTimeFormattedString);
+      
+      
       frameTimeCumulativeHolder = 0;
       frameTime_first = 0;
       frameTime_second = 0;
