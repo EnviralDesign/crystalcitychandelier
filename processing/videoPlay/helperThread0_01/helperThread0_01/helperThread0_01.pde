@@ -4,10 +4,9 @@ import java.awt.*;
 //// --- USER EDITABLE VARIABLES: ---
 // Data variables:
 String[] ports = {"COM8","COM10","COM14","COM15","COM16","COM17","COM18","COM19","COM20"};
-String spout_helperThread0 = "helperThread_0";
 
-// enabled ports - 1 = this sketch, 0 = master sketch, and higher nubmers equal other helper threads.
-int[] ep = {1,1,1,1,1,0,0,0,0}; 
+// enabled ports - 1 sends on this sketch, 0 does not. used for "multi threading"
+int[] ep = {0,0,0,1,1,1,0,0,0}; 
 
 int rows = 150;
 int columns = 72;
@@ -20,9 +19,8 @@ float maxBright = .5;
 //// --- INITIALIZATION VARIABLES: ---
 
 int totalLedCount = rows*columns;
-//Movie myMovie;
 
-boolean captureTime = true;
+boolean captureTime = false;
 int frameTimeReportIters = 60;
 int frameTimeReportCounter = 0;
 int frameTimeCumulativeHolder = 0;
@@ -47,7 +45,7 @@ Serial teensy_5;
 Serial teensy_6;
 Serial teensy_7;
 Serial teensy_8;
-Spout client0;
+Spout receiver;
 PImage img;
 
 // Teensy rgb byte arrays - per teensy
@@ -77,7 +75,6 @@ public void setup() {
   
   // size and frame rate
   size(rows, columns, P2D);
-  //frame.setResizable(false);
   frameRate(60);
   background(0);
   
@@ -98,14 +95,10 @@ public void setup() {
   if(ep[8] == 1){ teensy_8 = new Serial(this, ports[8], 115200); }
   
   // Init Spout client receiver ..
-  client0 = new Spout();
-  client0.initReceiver(spout_helperThread0, img);
+  receiver = new Spout();
+  receiver.initReceiver("", img);
   
   delay(500);
-
-  // Initiate the the video sequence 
-  //myMovie = new Movie(this, "simpleRamp.mov");
-  //myMovie.loop();
   
 }
 
@@ -119,8 +112,4 @@ void draw() {
   
 }
 
-void exit() {
-  // CLOSE THE SPOUT RECEIVER HERE
-  client0.closeReceiver();
-  super.exit();
-} 
+

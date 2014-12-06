@@ -73,7 +73,6 @@ void writeToLeds(int t0, int t1, int t2, int t3, int t4, int t5, int t6, int t7,
     timeCapture2 = millis();
   }
  
- 
    // Write rgb value arrays to all teensy ports. If/else statement checks arguments to see which thread will process the serial sendin
    if(t0 == 1){ teensy_0.write(vals_0); }
    //else if(t0 == 1) { println("Delegate teensy_0 to helper thread"); }

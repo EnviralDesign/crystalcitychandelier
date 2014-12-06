@@ -1,14 +1,13 @@
-import processing.video.*;
 import processing.serial.*;
+import java.awt.*;
 
 //// --- USER EDITABLE VARIABLES: ---
 // Data variables:
 String[] ports = {"COM8","COM10","COM14","COM15","COM16","COM17","COM18","COM19","COM20"};
 
 // enabled ports - 1 sends on this sketch, 0 does not. used for "multi threading"
-int[] ep = {1,1,1,0,0,0,0,0,0}; 
+int[] ep = {0,0,0,0,0,0,1,1,1}; 
 
-// specifies image dimensions. rows is pixels in x, columns is pixels in y
 int rows = 150;
 int columns = 72;
 int dataChunkSize = 3;
@@ -20,9 +19,8 @@ float maxBright = .5;
 //// --- INITIALIZATION VARIABLES: ---
 
 int totalLedCount = rows*columns;
-Movie myMovie;
 
-boolean captureTime = true;
+boolean captureTime = false;
 int frameTimeReportIters = 60;
 int frameTimeReportCounter = 0;
 int frameTimeCumulativeHolder = 0;
@@ -47,7 +45,8 @@ Serial teensy_5;
 Serial teensy_6;
 Serial teensy_7;
 Serial teensy_8;
-Spout client;
+Spout receiver;
+PImage img;
 
 // Teensy rgb byte arrays - per teensy
 byte[] vals_0 = new byte[(totalLedCount/9) * dataChunkSize];
@@ -68,16 +67,18 @@ int d = day();    // Values from 1 - 31
 int mo = month();  // Values from 1 - 12
 int y = year();   // 2003, 2004, 2005, etc.
 
-long epoch = 0; // this is set in debug manager - a sort of absolute time in seconds since jan 1970.
-// may or may not be useless.
+long epoch = 0;
 
 //// -----------------------------------------------------------------------------------------------------
 
 public void setup() {
   
   // size and frame rate
-  size(rows, columns, P3D);
+  size(rows, columns, P2D);
   frameRate(60);
+  background(0);
+  
+  img = createImage(width, height, ARGB);
   
   // Print out all available serial ports
   println(Serial.list());
@@ -93,30 +94,22 @@ public void setup() {
   if(ep[7] == 1){ teensy_7 = new Serial(this, ports[7], 115200); }
   if(ep[8] == 1){ teensy_8 = new Serial(this, ports[8], 115200); }
   
+  // Init Spout client receiver ..
+  receiver = new Spout();
+  receiver.initReceiver("", img);
   
   delay(500);
-
-  // Initiate the the video sequence 
-  myMovie = new Movie(this, "simpleRamp.mov");
-  myMovie.loop();
-  
-  // Initiate the spout video sender. this will be recieved by as many processing sketches as are running.
-  client = new Spout();
-  client.initSender("spout", width, height);
   
 }
 
-//// -----------------------------------------------------------------------------------------------------
-
 void draw() {
-  
+ 
   updateVideo();
-
+  
   writeToLeds(ep[0],ep[1],ep[2],ep[3],ep[4],ep[5],ep[6],ep[7],ep[8]);
-
+  
   printDebug();
   
 }
-
 
 

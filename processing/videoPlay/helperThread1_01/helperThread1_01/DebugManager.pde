@@ -22,7 +22,7 @@ void printDebug() {
         println(1000/(frameTimeCumulativeHolder / frameTimeReportIters));        
       }
       println("-----------------");
-      print("Video Processing: ");
+      print("Gif Processing: ");
       print(String.format("%.1f", ((float)frameTime_first / (float)frameTimeCumulativeHolder) * 100));
       println(" %");
       print("Pixel Access: ");
