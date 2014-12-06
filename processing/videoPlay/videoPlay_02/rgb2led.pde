@@ -1,4 +1,4 @@
-void writeToLeds() {
+void writeToLeds(int t0, int t1, int t2, int t3, int t4, int t5, int t6, int t7, int t8) {
   
   // Capturing time 1 for frame rate calculation..
   if(captureTime){
@@ -73,16 +73,34 @@ void writeToLeds() {
     timeCapture2 = millis();
   }
  
-   // Write rgb value arrays to all teensy ports.
-   teensy_0.write(vals_0);
-   teensy_1.write(vals_1);
-   teensy_2.write(vals_2);
-   teensy_3.write(vals_3);
-   teensy_4.write(vals_4);
-   //teensy_5.write(vals_5);
-   //teensy_6.write(vals_6);
-   //teensy_7.write(vals_7);
-   //teensy_8.write(vals_8);
+ 
+   // Write rgb value arrays to all teensy ports. If/else statement checks arguments to see which thread will process the serial sendin
+   if(t0 == 0){ teensy_0.write(vals_0); }
+   //else if(t0 == 1) { println("Delegate teensy_0 to helper thread"); }
+   
+   if(t1 == 0){ teensy_1.write(vals_1); }
+   //else if(t1 == 1) { println("Delegate teensy_1 to helper thread"); }
+   
+   if(t2 == 0){ teensy_2.write(vals_2); }
+   //else if(t2 == 1) { println("Delegate teensy_2 to helper thread"); }
+   
+   if(t3 == 0){ teensy_3.write(vals_3); }
+   //else if(t3 == 1) { println("Delegate teensy_3 to helper thread"); }
+   
+   if(t4 == 0){ teensy_4.write(vals_4); }
+   //else if(t4 == 1) { println("Delegate teensy_4 to helper thread"); }
+   
+   if(t5 == 0){ teensy_5.write(vals_5); }
+   //else if(t5 == 1) { println("Delegate teensy_5 to helper thread"); }
+   
+   if(t6 == 0){ teensy_6.write(vals_6); }
+   //else if(t6 == 1) { println("Delegate teensy_6 to helper thread"); }
+   
+   if(t7 == 0){ teensy_7.write(vals_7); }
+   //else if(t7 == 1) { println("Delegate teensy_7 to helper thread"); }
+   
+   if(t8 == 0){ teensy_8.write(vals_8); }
+   //else if(t8 == 1) { println("Delegate teensy_8 to helper thread"); }
    
  if(captureTime){
   timeCapture3 = millis();

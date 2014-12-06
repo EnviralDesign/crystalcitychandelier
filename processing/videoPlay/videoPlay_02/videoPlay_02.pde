@@ -6,6 +6,9 @@ import processing.serial.*;
 String[] ports = {"COM8","COM10","COM14","COM15","COM16","COM17","COM18","COM19","COM20"};
 String spout_helperThread0 = "helperThread_0";
 
+// enabled ports - 0 = this sketch(master), 1+ equals other helper processing threads.
+int[] ep = {1,1,1,1,1,0,0,0,0}; 
+
 int rows = 150;
 int columns = 72;
 int dataChunkSize = 3;
@@ -44,6 +47,8 @@ Serial teensy_5;
 Serial teensy_6;
 Serial teensy_7;
 Serial teensy_8;
+Spout client0;
+PImage tex;
 
 // Teensy rgb byte arrays - per teensy
 byte[] vals_0 = new byte[(totalLedCount/9) * dataChunkSize];
@@ -71,28 +76,32 @@ long epoch = 0;
 public void setup() {
   
   // size and frame rate
-  size(rows, columns);
+  size(rows, columns, P3D);
   frameRate(30);
   
   // Print out all available serial ports
   println(Serial.list());
   
   // Instantiate serial ports per teensy
-  teensy_0 = new Serial(this, ports[0], 115200);
-  teensy_1 = new Serial(this, ports[1], 115200);
-  teensy_2 = new Serial(this, ports[2], 115200);
-  teensy_3 = new Serial(this, ports[3], 115200);
-  teensy_4 = new Serial(this, ports[4], 115200);
-  teensy_5 = new Serial(this, ports[5], 115200);
-  teensy_6 = new Serial(this, ports[6], 115200);
-  teensy_7 = new Serial(this, ports[7], 115200);
-  teensy_8 = new Serial(this, ports[8], 115200);
+  if(ep[0] == 0){ teensy_0 = new Serial(this, ports[0], 115200); }
+  if(ep[1] == 0){ teensy_1 = new Serial(this, ports[1], 115200); }
+  if(ep[2] == 0){ teensy_2 = new Serial(this, ports[2], 115200); }
+  if(ep[3] == 0){ teensy_3 = new Serial(this, ports[3], 115200); }
+  if(ep[4] == 0){ teensy_4 = new Serial(this, ports[4], 115200); }
+  if(ep[5] == 0){ teensy_5 = new Serial(this, ports[5], 115200); }
+  if(ep[6] == 0){ teensy_6 = new Serial(this, ports[6], 115200); }
+  if(ep[7] == 0){ teensy_7 = new Serial(this, ports[7], 115200); }
+  if(ep[8] == 0){ teensy_8 = new Serial(this, ports[8], 115200); }
+  
   
   delay(500);
 
   // Initiate the the video sequence 
   myMovie = new Movie(this, "simpleRamp.mov");
   myMovie.loop();
+  
+  client0 = new Spout();
+  client0.initSender(spout_helperThread0, width, height);
   
 }
 
@@ -101,10 +110,18 @@ public void setup() {
 void draw() {
   
   updateVideo();
+  
+  client0.sendTexture();
 
-  writeToLeds();
+  writeToLeds(ep[0],ep[1],ep[2],ep[3],ep[4],ep[5],ep[6],ep[7],ep[8]);
 
   printDebug();
 }
 
+// over-ride exit to release sharing
+void exit() {
+  // CLOSE THE SPOUT SENDER HERE
+  client0.closeSender();
+  super.exit();
+} 
 

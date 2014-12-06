@@ -1,6 +1,10 @@
 crystalcitychandelier
 =====================
 
+INFO:
+ - Must run on a 32 bit Processing version, not 64 bit.
+ - Running on Processing 2.2.1
+
 TODO:
  - abstracting operations into their own functions instead of in draw()
 	- setLED
