@@ -19,9 +19,12 @@ float maxBright = .5;
 
 // TIMING Variables;
 
+int minAnimDuration = 1; // measured in MINUTES
+int maxAnimDuration = 5; // measured in MINUTES
+
 // integer multiplier to control passing of time in epoc mode. 
 //Int's are accurate enough since epoc is measuring in absolute milliseconds.
-int sim_dt_speedMult = 1;
+int sim_dt_speedMult = 6;
 
 // to simulate a certain date or time set this offset to the appropriate offset in SECONDS. will be a big number. use epoc
 // calculator online to calculate epoc for a certain date or refer to the following:
@@ -34,9 +37,7 @@ int sim_dt_speedMult = 1;
 int sim_dt_timeOfffset = 0; 
 //// ---------------------------------------INITIALIZATION VARIABLES:---------------------------------------
 
-int totalLedCount = rows*columns;
-Movie myMovie;
-
+// time debug printing init stuff.
 boolean captureTime = true;
 int frameTimeReportIters = 60;
 int frameTimeReportCounter = 0;
@@ -44,7 +45,7 @@ int frameTimeCumulativeHolder = 0;
 int frameTime_first = 0;
 int frameTime_second = 0;
 int frameTime_third = 0;
-int obligatoryDelay = 2;
+//int obligatoryDelay = 2;
 int timeCapture0;
 int timeCapture1;
 int timeCapture2;
@@ -52,7 +53,12 @@ int timeCapture3;
 
 int teensyIterator = 0;
 
-// Serial Objects - Per Teensy
+// Video / frame init stuff
+int totalLedCount = rows*columns;
+Movie myMovie;
+Spout client;
+
+// Serial Port Objects - Per Teensy
 Serial teensy_0;
 Serial teensy_1;
 Serial teensy_2;
@@ -62,7 +68,7 @@ Serial teensy_5;
 Serial teensy_6;
 Serial teensy_7;
 Serial teensy_8;
-Spout client;
+
 
 // Teensy rgb byte arrays - per teensy
 byte[] vals_0 = new byte[(totalLedCount/9) * dataChunkSize];
@@ -85,12 +91,15 @@ int y = year();   // 2003, 2004, 2005, etc.
 
 long epochMS = System.currentTimeMillis();
 long epoch = System.currentTimeMillis()/1000; // this is set in debug manager - a sort of absolute time in seconds since jan 1970.
+int simulatedElapsedMS = 0; 
 
 // Epoc time will be converted back to date time, after a speed multiplier has been applied to quickly
 // simulate changing of days / hours / months etc for animation swapping tests.
 
-String simulatedDateTimeFormattedString = "";
-int[] simulatedDateTime = {0,0,0,0,0,0}; 
+String simulatedDateTimeFormattedString = ""; // Use this to print date in another format. Easier to parse if needed.
+
+// Movie timing vars:
+int currentClipDuration = 10000; // IN SECONDS
 
 
 

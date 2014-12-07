@@ -46,11 +46,15 @@ void printDebug() {
       print(mi);
       print(", Second: ");
       println(s);
+      println("--Simulated Date Info--");
       print("Time since Epoch: ");
       println(epoch);
-      println("--Simulated Date Info--");
       println(new Date( epoch * 1000 ));
       println(simulatedDateTimeFormattedString);
+      println("---Video timing info---");
+      print("Seconds left on current clip: ");
+      println(currentClipDuration / 1000);
+      
       
       
       frameTimeCumulativeHolder = 0;
