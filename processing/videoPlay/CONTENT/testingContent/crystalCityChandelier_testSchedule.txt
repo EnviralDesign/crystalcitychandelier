@@ -1,5 +1,5 @@
-1417932583,1418763901,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/simpleramp.mov
-1418763902,1418763980,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/testRamps.mov
-1418763981,1418764120,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/disturbingPlanes.mov
-1418764121,1418764200,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/reflectionFractals.mov
-1418764201,1577858461,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/simpleramp.mov
+1417932583,1418763901,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/simpleramp.mov,10
+1418763902,1418763980,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/testRamps.mov,30
+1418763981,1418764120,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/disturbingPlanes.mov,0
+1418764121,1418764200,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/reflectionFractals.mov,60
+1418764201,1577858461,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/simpleramp.mov,30

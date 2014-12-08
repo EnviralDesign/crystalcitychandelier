@@ -13,9 +13,9 @@ void writeToLeds(int t0, int t1, int t2, int t3, int t4, int t5, int t6, int t7,
     int g = (int) (((c >> 8) & 0xFF) * maxBright);
     int b = (int) ((c & 0xFF) * maxBright);
     // here we asssign our rgb data into our byte array while converting it to bytes. byte order: r1,g1,b1,r2,g2,b2, etc... 
-    vals_A[pix * dataChunkSize] = (byte) r;
-    vals_A[pix * dataChunkSize+1] = (byte) g;
-    vals_A[pix * dataChunkSize+2] = (byte) b;
+    vals_A[pix * dataChunkSize] = (int) r;
+    vals_A[pix * dataChunkSize+1] = (int) g;
+    vals_A[pix * dataChunkSize+2] = (int) b;
   }
   
   
@@ -31,9 +31,9 @@ void writeToLeds(int t0, int t1, int t2, int t3, int t4, int t5, int t6, int t7,
     int g = (int) (((c >> 8) & 0xFF) * maxBright);
     int b = (int) ((c & 0xFF) * maxBright);
     // here we asssign our rgb data into our byte array while converting it to bytes. byte order: r1,g1,b1,r2,g2,b2, etc... 
-    vals_B[pix * dataChunkSize] = (byte) r;
-    vals_B[pix * dataChunkSize+1] = (byte) g;
-    vals_B[pix * dataChunkSize+2] = (byte) b;
+    vals_B[pix * dataChunkSize] = (int) r;
+    vals_B[pix * dataChunkSize+1] = (int) g;
+    vals_B[pix * dataChunkSize+2] = (int) b;
   }
   
   
@@ -50,6 +50,7 @@ void writeToLeds(int t0, int t1, int t2, int t3, int t4, int t5, int t6, int t7,
     int r = (int)( (((float)vals_A[pix*dataChunkSize  ]) * (1-t_normalized)) + (((float)vals_B[pix*dataChunkSize  ]) * t_normalized) );
     int g = (int)( (((float)vals_A[pix*dataChunkSize+1]) * (1-t_normalized)) + (((float)vals_B[pix*dataChunkSize+1]) * t_normalized) );
     int b = (int)( (((float)vals_A[pix*dataChunkSize+2]) * (1-t_normalized)) + (((float)vals_B[pix*dataChunkSize+2]) * t_normalized) );
+    
     
     pixels[pix] = color(r, g, b);
     
@@ -108,6 +109,7 @@ void writeToLeds(int t0, int t1, int t2, int t3, int t4, int t5, int t6, int t7,
     
     updatePixels();
   }
+  
     
   timeCapture2 = millis();
 

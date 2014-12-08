@@ -1,6 +1,6 @@
-Year,Month,Day,Hour,Minute,Second,Path,Filenname,Ext
-2014,12,16,16,5,1,C:\crystalChandelier_code\crystalcitychandelier\processing\videoPlay\CONTENT\testingContent,simpleramp,mov
-2014,12,16,16,6,20,C:\crystalChandelier_code\crystalcitychandelier\processing\videoPlay\CONTENT\testingContent,testRamps,mov
-2014,12,16,16,8,40,C:\crystalChandelier_code\crystalcitychandelier\processing\videoPlay\CONTENT\testingContent,disturbingPlanes,mov
-2014,12,16,16,9,60,C:\crystalChandelier_code\crystalcitychandelier\processing\videoPlay\CONTENT\testingContent,reflectionFractals,mov
-2020,1,1,1,1,1,C:\crystalChandelier_code\crystalcitychandelier\processing\videoPlay\CONTENT\testingContent,simpleramp,mov
+Year,Month,Day,Hour,Minute,Second,Path,Filenname,Ext,Transition
+2014,12,16,16,5,1,C:\crystalChandelier_code\crystalcitychandelier\processing\videoPlay\CONTENT\testingContent,simpleramp,mov,10
+2014,12,16,16,6,20,C:\crystalChandelier_code\crystalcitychandelier\processing\videoPlay\CONTENT\testingContent,testRamps,mov,30
+2014,12,16,16,8,40,C:\crystalChandelier_code\crystalcitychandelier\processing\videoPlay\CONTENT\testingContent,disturbingPlanes,mov,0
+2014,12,16,16,9,60,C:\crystalChandelier_code\crystalcitychandelier\processing\videoPlay\CONTENT\testingContent,reflectionFractals,mov,60
+2020,1,1,1,1,1,C:\crystalChandelier_code\crystalcitychandelier\processing\videoPlay\CONTENT\testingContent,simpleramp,mov,30

@@ -2,8 +2,6 @@ import processing.video.*;
 import processing.serial.*;
 import java.util.Date;
 import java.text.*;
-import java.util.Random;
-//import java.nio.file.Files;
 
 //// ------------------------------- USER EDITABLE VARIABLES:---------------------------------------------
 // DATA variables:
@@ -19,10 +17,10 @@ int columns = 72;
 int dataChunkSize = 3;
 
 // ART variables:
-float maxBright = 1.0; // max brightness of the pixels. a 0-1 multiplier that happens after rgb data is gathered from the image.
+float maxBright = .75; // max brightness of the pixels. a 0-1 multiplier that happens after rgb data is gathered from the image.
 
 // TIMING Variables;
-int transitionLength = 30; // In seconds
+//int transitionLength = 30; // In seconds
 
 // integer multiplier to control passing of time in epoc mode. 
 //Int's are accurate enough since epoc is measuring in absolute milliseconds.
@@ -37,7 +35,7 @@ int sim_dt_speedMult = 1;
 // 86400 seconds = 1 day
 // 3600 seconds = 1 hour
 // 60 seconds = 1 minute
-long sim_dt_timeOffset = 736681 - 50;
+long sim_dt_timeOffset = 694123 - 9000;
 //// ---------------------------------------INITIALIZATION VARIABLES:---------------------------------------
 
 // time debug printing init stuff.
@@ -61,18 +59,23 @@ int totalLedCount = rows*columns;
 Movie movie_A;
 Movie movie_B;
 Spout client;
+boolean reLoopVideo = false;
+String vidA = "";
+String vidB = "";
 
 // animation content data holders
 String[] testAnimCollection; // Holds each row from the converted CSV file. each row has start and end epoch times, as well as a media path. start time is currently unused.
 String[] pathListMaster; // List of media paths only. derived from testAnimCollection
 long[] startTimeMaster; // list of media start times. derived from testAnimCollection
 long[] endTimeMaster; // list of media END times. derived from testAnimCollection
+int[] transitionsMaster; // list of transition lengths per clip. So if a clip has a 10 second transition length, it will start fading 10 seconds before it's scheduled end time.
 
 // Movie timing vars:
 int currentClipNum = 0; // Int specifying which video is playing in the overall playlist.
 long timeLeftCurrent = 30; // time left in current animation. Inits only, not set here.
 int tweenerValue = 0; // Clamps between 0-255. is calculated from time left current combined with transition length.
 float t_normalized = 0; // same as above, however this is a float whic his normalized between 0-1 which cross fades from one animation to another over the course of the transition period.
+int transitionLength = 30; // In seconds
 
 
 // Serial Port Objects - Per Teensy. Created here, instantiated in the setup() method.
@@ -88,12 +91,12 @@ Serial teensy_8;
 
 
 // The raw Pixel info is loaded twice, once for each image through out the draw cycle. These arrays hold that raw data so that it can be iterated through later.
-int[] pixelArray_A = new int[0];
-int[] pixelArray_B = new int[0];
+color[] pixelArray_A = new int[0];
+color[] pixelArray_B = new int[0];
 
 // These match the above arrays, however they hold finalized RGB bit data that will eventually be cross faded between and assigned to the final per teensy byte arrays below..
-byte[] vals_A = new byte[(totalLedCount) * dataChunkSize];
-byte[] vals_B = new byte[(totalLedCount) * dataChunkSize];
+int[] vals_A = new int[(totalLedCount) * dataChunkSize];
+int[] vals_B = new int[(totalLedCount) * dataChunkSize];
 
 // These are the per teensy byte arrays. each teensy that is being used receives it's data over serial from the corresponding array below.
 byte[] vals_0 = new byte[(totalLedCount/9) * dataChunkSize];
@@ -147,6 +150,8 @@ public void setup() {
     movie_B = new Movie(this, pathListMaster[1]);
     movie_A.loop();
     movie_B.loop();
+    vidA = pathListMaster[0];
+    vidB = pathListMaster[1];
   
   // Initiate the spout video sender. this will be recieved by as many processing sketches as are running.
   client = new Spout();

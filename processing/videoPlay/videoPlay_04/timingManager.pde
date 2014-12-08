@@ -4,7 +4,7 @@ void updateTiming() {
 
   //If epoch is used in the final script, be sure to use the following line rather than the below method for calculating epoch.
   
-  epoch = System.currentTimeMillis()/1000;
+  epoch = (System.currentTimeMillis()/1000) + sim_dt_timeOffset;
   
   // Here Epoch is being updated with the time it took the frame to complete. this isn't as accurate but allows
   // the speed to be adjusted to simulate faster passage of time as well as offfsets.

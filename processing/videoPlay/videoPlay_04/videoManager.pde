@@ -20,18 +20,21 @@ void generatePlaylist(String dir) {
   long[] startTime = new long[testAnimCollection.length]; // Declare animation clip start time array.
   long[] endTime = new long[testAnimCollection.length]; // Declare animation clip end time array.
   String[] pathList = new String[testAnimCollection.length]; // Declare animation clip PATH array.
+  int[] transitions = new int[testAnimCollection.length]; // Declare transition length array
   
   // Iterate through test Anim collection and assign items to each slot.
   for (int i = 0; i < testAnimCollection.length; i++){
+    println(testAnimCollection[i]);
     pathList[i] = (String)split(testAnimCollection[i],',')[2];
     startTime[i] = Long.parseLong(split(testAnimCollection[i],',')[0]);
     endTime[i] = Long.parseLong(split(testAnimCollection[i],',')[1]);
-  }
+    transitions[i] = Integer.parseInt(split(testAnimCollection[i],',')[3]);
   
   // Since the above loop worked on local variables, scopy over contents to global variables below.
   pathListMaster = pathList;
   startTimeMaster = startTime;
   endTimeMaster = endTime;
+  transitionsMaster = transitions;
   
   // Print all the parsed and ready data.
   println(pathList);
@@ -39,7 +42,7 @@ void generatePlaylist(String dir) {
   println(startTime);
   println("");
   println(endTime);
-  
+  }
 }
 
 // Called from videoUpdate
@@ -52,6 +55,13 @@ void manageClipTiming() {
     tweenerValue = constrain((int)timeLeftCurrent, 0, transitionLength); // Calculate tweener value in two steps. this step constrains it from 0, to transition length.
     tweenerValue = (int)map(tweenerValue, transitionLength, 0, 0, 255); // Remap tweener value from 0-255.
     t_normalized = map((float)tweenerValue, 0, 255.0, 0, 1.0); // calculate normalized tweener and assign to new variable. This is used to blend between the pixels.
+    
+    // Set both clips to Loop...
+    if(reLoopVideo == true){
+      movie_A.loop();
+      movie_B.loop();
+      reLoopVideo = false;
+    }
   }
   
   // If epoch is larger, than we need to update the clip playing to the next one on the schedule, and doing so will load a new clip end time.
@@ -59,22 +69,22 @@ void manageClipTiming() {
   else {
     
     print("Clip ");
-    print(endTimeMaster[currentClipNum]);
+    print(pathListMaster[currentClipNum]);
     println(" has expired... Switching to new clip:");
     currentClipNum = constrain((currentClipNum+1), 0, testAnimCollection.length-1); // Iterate +1 clip number while keeping it constrained from 0 - maxAnims
     print("LOADED anim: ");
     println(pathListMaster[currentClipNum]);
-    print("Now on clip# ");
+    print("Set clip to: ");
     println(currentClipNum);
     
     // Shift Movie B into A, and load a new clip for B.
-    movie_A = movie_B;
-    movie_B = new Movie(this, pathListMaster[currentClipNum]);
-    println("Shifting movie B to A");
-    // Set both clips to Loop...
-    movie_B.loop();
-    movie_A.loop();
-    println("Looping Movies");
+    //movie_A = movie_B;
+    movie_A = new Movie(this, pathListMaster[currentClipNum]);
+    vidA = pathListMaster[currentClipNum]; // string equivelant of the above, for debug only.
+    movie_B = new Movie(this, pathListMaster[constrain(currentClipNum+1, 0, testAnimCollection.length-1)]);
+    vidB = pathListMaster[constrain(currentClipNum+1, 0, testAnimCollection.length-1)];
+    reLoopVideo = true;
+    transitionLength = transitionsMaster[currentClipNum]; // set new transition length.
     
   }
 }

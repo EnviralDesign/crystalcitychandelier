@@ -41,7 +41,7 @@ void printDebug() {
       print("  --  ");
       println(new Date( epoch * 1000 ));
       println("");
-      println("-----------Video timing info-----------");
+      println("-----------Clip transition info-----------");
       print("   Next End Time: ");
       print(endTimeMaster[currentClipNum]);
       print("  --  seconds till next: ");
@@ -53,6 +53,10 @@ void printDebug() {
       print("  ");
       print("            Tweener normalized: ");
       println(t_normalized);
+      print("Clip A: ");
+      println(vidA);
+      print("Clip B: ");
+      println(vidB);
 
 
 
