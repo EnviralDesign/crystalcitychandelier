@@ -2,8 +2,10 @@ crystalcitychandelier
 =====================
 
 INFO:
- - Must run on a 32 bit Processing version, not 64 bit.
- - Running on Processing 2.2.1
+ - Tested Running Conditions:
+	- Windows 8.1
+	- Processing 2.2.1 32 bit
+ - TODO: Breakdown of files and methods.
 
 TODO:
  - abstracting operations into their own functions instead of in draw()

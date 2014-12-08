@@ -2,9 +2,13 @@ import processing.video.*;
 import processing.serial.*;
 import java.util.Date;
 import java.text.*;
+import java.util.Random;
+//import java.nio.file.Files;
+
 //// ------------------------------- USER EDITABLE VARIABLES:---------------------------------------------
 // DATA variables:
 String[] ports = {"COM8","COM10","COM14","COM15","COM16","COM17","COM18","COM19","COM20"};
+String testMediaFolder = "C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/crystalCityChandelier_testSchedule.txt";
 
 // enabled ports - 1 sends on this sketch, 0 does not. used for "multi threading"
 int[] ep = {1,1,1,0,0,0,0,0,0}; 
@@ -15,7 +19,7 @@ int columns = 72;
 int dataChunkSize = 3;
 
 // ART variables:
-float maxBright = .5;
+float maxBright = .5; // max brightness of the pixels. a 0-1 multiplier that happens after rgb data is gathered from the image.
 
 // TIMING Variables;
 
@@ -45,7 +49,6 @@ int frameTimeCumulativeHolder = 0;
 int frameTime_first = 0;
 int frameTime_second = 0;
 int frameTime_third = 0;
-//int obligatoryDelay = 2;
 int timeCapture0;
 int timeCapture1;
 int timeCapture2;
@@ -55,8 +58,22 @@ int teensyIterator = 0;
 
 // Video / frame init stuff
 int totalLedCount = rows*columns;
-Movie myMovie;
+Movie movie_A;
+Movie movie_B;
 Spout client;
+
+String[] testAnimCollection;
+String[] pathList;
+int[] startTime;
+int[] endTime;
+String tmpStr;
+//println("there are " + testAnimCollection.length + " lines");
+//println(testAnimCollection);
+
+//ArrayList<String> testAnimCollection = new ArrayList<String>();
+//String[] testAnimCollection;
+
+PImage img;
 
 // Serial Port Objects - Per Teensy
 Serial teensy_0;
@@ -125,16 +142,21 @@ public void setup() {
   if(ep[7] == 1){ teensy_7 = new Serial(this, ports[7], 115200); }
   if(ep[8] == 1){ teensy_8 = new Serial(this, ports[8], 115200); }
   
+  generatePlaylist(testMediaFolder);
   
   delay(500);
 
   // Initiate the the video sequence 
-  myMovie = new Movie(this, "simpleRamp.mov");
-  myMovie.loop();
+  movie_A = new Movie(this, "simpleRamp.mov");
+  movie_B = new Movie(this, "testRamps.mov");
+  
+  movie_A.loop();
+  movie_B.loop();
   
   // Initiate the spout video sender. this will be recieved by as many processing sketches as are running.
   client = new Spout();
   client.initSender("spout", width, height);
+  
   
 }
 
