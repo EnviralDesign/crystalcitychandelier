@@ -2,4 +2,6 @@
 1418763902,1418763980,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/testRamps.mov,30
 1418763981,1418764120,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/disturbingPlanes.mov,0
 1418764121,1418764200,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/reflectionFractals.mov,60
-1418764201,1577858461,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/simpleramp.mov,30
+1418764201,1418764350,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/spiralFlower.mov,30
+1418764351,1418764530,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/eye.mov,30
+1418764531,1577858461,C:/crystalChandelier_code/crystalcitychandelier/processing/videoPlay/CONTENT/testingContent/simpleramp.mov,30

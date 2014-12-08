@@ -17,7 +17,7 @@ int columns = 72;
 int dataChunkSize = 3;
 
 // ART variables:
-float maxBright = .75; // max brightness of the pixels. a 0-1 multiplier that happens after rgb data is gathered from the image.
+float maxBright = 1.0; // max brightness of the pixels. a 0-1 multiplier that happens after rgb data is gathered from the image.
 
 // TIMING Variables;
 //int transitionLength = 30; // In seconds
@@ -35,7 +35,7 @@ int sim_dt_speedMult = 1;
 // 86400 seconds = 1 day
 // 3600 seconds = 1 hour
 // 60 seconds = 1 minute
-long sim_dt_timeOffset = 694123 - 9000;
+long sim_dt_timeOffset = 694123 - 10600;
 //// ---------------------------------------INITIALIZATION VARIABLES:---------------------------------------
 
 // time debug printing init stuff.
