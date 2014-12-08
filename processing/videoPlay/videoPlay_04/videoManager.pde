@@ -1,35 +1,39 @@
+// updateVideo calls other functions. Manage clipTiming handles video scheduling.
+// client.sendTexture() sends the data over Spout.
 void updateVideo() {
-    timeCapture0 = millis();
+  
+  timeCapture0 = millis();
 
   manageClipTiming();
   
-  //loadPixels(); // Load canvas pixels into pixel array / memory.
-  
   client.sendTexture();
+  
 
 }
 
-
+// Generate playlist - one time action that happens in setup()
 void generatePlaylist(String dir) {
   
-  testAnimCollection = new String[0];
-  //pathList = new String[0];
-  //startTime = new long[0];
-  //endTime = new long[0];
-  testAnimCollection = loadStrings(dir);
-  println(testAnimCollection);
-  long[] startTime = new long[testAnimCollection.length];
-  long[] endTime = new long[testAnimCollection.length];
-  String[] pathList = new String[testAnimCollection.length];
+  testAnimCollection = new String[0]; // declare the array to hold the raw data read from the converted CSV file.
+  testAnimCollection = loadStrings(dir); // load contents of file into array. 
+  
+  long[] startTime = new long[testAnimCollection.length]; // Declare animation clip start time array.
+  long[] endTime = new long[testAnimCollection.length]; // Declare animation clip end time array.
+  String[] pathList = new String[testAnimCollection.length]; // Declare animation clip PATH array.
+  
+  // Iterate through test Anim collection and assign items to each slot.
   for (int i = 0; i < testAnimCollection.length; i++){
     pathList[i] = (String)split(testAnimCollection[i],',')[2];
     startTime[i] = Long.parseLong(split(testAnimCollection[i],',')[0]);
     endTime[i] = Long.parseLong(split(testAnimCollection[i],',')[1]);
   }
+  
+  // Since the above loop worked on local variables, scopy over contents to global variables below.
   pathListMaster = pathList;
   startTimeMaster = startTime;
   endTimeMaster = endTime;
   
+  // Print all the parsed and ready data.
   println(pathList);
   println("");
   println(startTime);
@@ -38,62 +42,48 @@ void generatePlaylist(String dir) {
   
 }
 
-
+// Called from videoUpdate
 void manageClipTiming() {
   
-    //println(  (endTimeMaster[currentClipNum]) );
-    //println(  (epoch) );
-  
+  // Checks to see if epoch is larger than current clip's end time. If not, do the following...
   if(epoch <= endTimeMaster[currentClipNum]){
-    //println("Clip not expired...");
-    
-    //println( ((float)endTimeMaster[currentClipNum]) /1000 );
-    //println( ((float)epoch)/1000 );
 
-    timeLeftCurrent = ((endTimeMaster[currentClipNum]) - (epoch));
-    tweenerValue = constrain((int)timeLeftCurrent, 0, transitionLength);
-    tweenerValue = (int)map(tweenerValue, transitionLength, 0, 0, 255);
-    t_normalized = map((float)tweenerValue, 0, 255.0, 0, 1.0);
+    timeLeftCurrent = ((endTimeMaster[currentClipNum]) - (epoch)); // Calcuates time left by subtracting epoch from current clip's end time.
+    tweenerValue = constrain((int)timeLeftCurrent, 0, transitionLength); // Calculate tweener value in two steps. this step constrains it from 0, to transition length.
+    tweenerValue = (int)map(tweenerValue, transitionLength, 0, 0, 255); // Remap tweener value from 0-255.
+    t_normalized = map((float)tweenerValue, 0, 255.0, 0, 1.0); // calculate normalized tweener and assign to new variable. This is used to blend between the pixels.
   }
   
+  // If epoch is larger, than we need to update the clip playing to the next one on the schedule, and doing so will load a new clip end time.
+  // The new clip end time will cause the tweener and time left to reset by default, so we need to load video B into A, and load the next video into B.
   else {
+    
+    print("Clip ");
     print(endTimeMaster[currentClipNum]);
-    print(" end time - was expired against epoch time: ");
-    println(epoch);
-    currentClipNum = constrain((currentClipNum+1), 0, testAnimCollection.length-1);
+    println(" has expired... Switching to new clip:");
+    currentClipNum = constrain((currentClipNum+1), 0, testAnimCollection.length-1); // Iterate +1 clip number while keeping it constrained from 0 - maxAnims
     print("LOADED anim: ");
     println(pathListMaster[currentClipNum]);
-    movie_B = movie_A;
-    movie_A = new Movie(this, pathListMaster[currentClipNum]);
+    print("Now on clip# ");
+    println(currentClipNum);
+    
+    // Shift Movie B into A, and load a new clip for B.
+    movie_A = movie_B;
+    movie_B = new Movie(this, pathListMaster[currentClipNum]);
+    println("Shifting movie B to A");
+    // Set both clips to Loop...
     movie_B.loop();
     movie_A.loop();
+    println("Looping Movies");
     
   }
-  
 }
 
-
-/*
-void videoTween() {
-  // place movie file on canvas (must happen every frame, small method below controls playback)
-  //tint(255, 255, 255, 1);
-  //background(movie_A);
-  image(movie_A, 0, 0);
-  
-  //tweenerValue
-  image(movie_B, 0, 0);
-  
-}
-*/
-
-long mylong(String a)
-{
-  return Long.parseLong(a);
-}
-
-// Called every time a new frame is available to read
+// reads new frames of the video every iteration.
 void movieEvent(Movie m) {
+  if (frameCount > 1) { // this if statememte is neccesary to avoid the error in the beginning of the exeecution.
   m.read();
+  }
 }
 
 

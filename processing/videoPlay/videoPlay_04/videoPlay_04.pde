@@ -19,17 +19,15 @@ int columns = 72;
 int dataChunkSize = 3;
 
 // ART variables:
-float maxBright = .5; // max brightness of the pixels. a 0-1 multiplier that happens after rgb data is gathered from the image.
+float maxBright = 1.0; // max brightness of the pixels. a 0-1 multiplier that happens after rgb data is gathered from the image.
 
 // TIMING Variables;
-
-//int minAnimDuration = 1; // measured in MINUTES
-//int maxAnimDuration = 5; // measured in MINUTES
-int transitionLength = 30;
+int transitionLength = 30; // In seconds
 
 // integer multiplier to control passing of time in epoc mode. 
 //Int's are accurate enough since epoc is measuring in absolute milliseconds.
-int sim_dt_speedMult = 10;
+// Set this back to 1 when ready to launch.
+int sim_dt_speedMult = 1;
 
 // to simulate a certain date or time set this offset to the appropriate offset in SECONDS. will be a big number. use epoc
 // calculator online to calculate epoc for a certain date or refer to the following:
@@ -39,8 +37,7 @@ int sim_dt_speedMult = 10;
 // 86400 seconds = 1 day
 // 3600 seconds = 1 hour
 // 60 seconds = 1 minute
-//int sim_dt_timeOfffset = 770000; 
-long sim_dt_timeOffset = 757617 - 200;
+long sim_dt_timeOffset = 736681 - 50;
 //// ---------------------------------------INITIALIZATION VARIABLES:---------------------------------------
 
 // time debug printing init stuff.
@@ -51,11 +48,12 @@ int frameTimeCumulativeHolder = 0;
 int frameTime_first = 0;
 int frameTime_second = 0;
 int frameTime_third = 0;
-int timeCapture0;
-int timeCapture1;
-int timeCapture2;
-int timeCapture3;
+int timeCapture0 = 1;
+int timeCapture1 = 2;
+int timeCapture2 = 3;
+int timeCapture3 = 4;
 
+// This is used to control the flow of rgb data to each of the individual teensy arrays.
 int teensyIterator = 0;
 
 // Video / frame init stuff
@@ -65,24 +63,19 @@ Movie movie_B;
 Spout client;
 
 // animation content data holders
-String[] testAnimCollection;
-String[] pathListMaster;
-long[] startTimeMaster;
-long[] endTimeMaster;
-String tmpStr;
-//long tmpLong;
+String[] testAnimCollection; // Holds each row from the converted CSV file. each row has start and end epoch times, as well as a media path. start time is currently unused.
+String[] pathListMaster; // List of media paths only. derived from testAnimCollection
+long[] startTimeMaster; // list of media start times. derived from testAnimCollection
+long[] endTimeMaster; // list of media END times. derived from testAnimCollection
 
 // Movie timing vars:
-//int currentClipDuration = 10000; // IN SECONDS
-int currentClipNum = 0;
-long timeLeftCurrent = 0;
-int tweenerValue = 0;
-float t_normalized = 0;
+int currentClipNum = 0; // Int specifying which video is playing in the overall playlist.
+long timeLeftCurrent = 30; // time left in current animation. Inits only, not set here.
+int tweenerValue = 0; // Clamps between 0-255. is calculated from time left current combined with transition length.
+float t_normalized = 0; // same as above, however this is a float whic his normalized between 0-1 which cross fades from one animation to another over the course of the transition period.
 
 
-PImage img;
-
-// Serial Port Objects - Per Teensy
+// Serial Port Objects - Per Teensy. Created here, instantiated in the setup() method.
 Serial teensy_0;
 Serial teensy_1;
 Serial teensy_2;
@@ -94,13 +87,15 @@ Serial teensy_7;
 Serial teensy_8;
 
 
-// Teensy rgb byte arrays - per teensy
+// The raw Pixel info is loaded twice, once for each image through out the draw cycle. These arrays hold that raw data so that it can be iterated through later.
 int[] pixelArray_A = new int[0];
 int[] pixelArray_B = new int[0];
 
+// These match the above arrays, however they hold finalized RGB bit data that will eventually be cross faded between and assigned to the final per teensy byte arrays below..
 byte[] vals_A = new byte[(totalLedCount) * dataChunkSize];
 byte[] vals_B = new byte[(totalLedCount) * dataChunkSize];
 
+// These are the per teensy byte arrays. each teensy that is being used receives it's data over serial from the corresponding array below.
 byte[] vals_0 = new byte[(totalLedCount/9) * dataChunkSize];
 byte[] vals_1 = new byte[(totalLedCount/9) * dataChunkSize];
 byte[] vals_2 = new byte[(totalLedCount/9) * dataChunkSize];
@@ -111,34 +106,17 @@ byte[] vals_6 = new byte[(totalLedCount/9) * dataChunkSize];
 byte[] vals_7 = new byte[(totalLedCount/9) * dataChunkSize];
 byte[] vals_8 = new byte[(totalLedCount/9) * dataChunkSize];
 
-// date and time init vars:
-int s = second();  // Values from 0 - 59
-int mi = minute();  // Values from 0 - 59
-int h = hour();    // Values from 0 - 23
-int d = day();    // Values from 1 - 31
-int mo = month();  // Values from 1 - 12
-int y = year();   // 2003, 2004, 2005, etc.
-
 long epochMS = System.currentTimeMillis();
 long epoch = System.currentTimeMillis()/1000; // this is set in debug manager - a sort of absolute time in seconds since jan 1970.
 int simulatedElapsedMS = 0; 
 
 // Epoc time will be converted back to date time, after a speed multiplier has been applied to quickly
 // simulate changing of days / hours / months etc for animation swapping tests.
-
 String simulatedDateTimeFormattedString = ""; // Use this to print date in another format. Easier to parse if needed.
-
-
-
-
-
 
 //// ---------------------------------------SETUP:---------------------------------------
 
 public void setup() {
-  
-  print("EPOCH::::: ");
-  println(epoch);
   
   // size and frame rate
   size(rows, columns, P3D);
@@ -147,7 +125,7 @@ public void setup() {
   // Print out all available serial ports
   println(Serial.list());
   
-  // Instantiate serial ports per teensy
+  // Instantiate serial ports per teensy. Only instantiate the teensys which this processing sketch / thread is going to run.
   if(ep[0] == 1){ teensy_0 = new Serial(this, ports[0], 115200); }
   if(ep[1] == 1){ teensy_1 = new Serial(this, ports[1], 115200); }
   if(ep[2] == 1){ teensy_2 = new Serial(this, ports[2], 115200); }
@@ -158,16 +136,17 @@ public void setup() {
   if(ep[7] == 1){ teensy_7 = new Serial(this, ports[7], 115200); }
   if(ep[8] == 1){ teensy_8 = new Serial(this, ports[8], 115200); }
   
+  // 1 time function that generates the playlist from the converted csv file and stores data to arrays.
   generatePlaylist(testMediaFolder);
   
+  // Obligatory delay. (can't hurt right?)
   delay(500);
 
-  // Initiate the the video sequence 
-  movie_A = new Movie(this, pathListMaster[0]);
-  movie_B = new Movie(this, pathListMaster[1]);
-  
-  movie_A.loop();
-  movie_B.loop();
+  // Initiate the the video sequence objects and set them to loop. 
+    movie_A = new Movie(this, pathListMaster[0]);
+    movie_B = new Movie(this, pathListMaster[1]);
+    movie_A.loop();
+    movie_B.loop();
   
   // Initiate the spout video sender. this will be recieved by as many processing sketches as are running.
   client = new Spout();
@@ -177,7 +156,11 @@ public void setup() {
 }
 
 //// -----------------------------------DRAW-----------------------------------------------
-
+// Draw is simple, since it calls external functions from other tabs.
+// updateVideo() is derived from the sketch / tab : videoManager
+// writeToLeds() is derived from the sketch / tab : rgb2led
+// updateTiming() is derived from the sketch / tab : timingManager
+// printDebug() is derived from the sketch / tab : DebugManager
 void draw() {
   
   
@@ -188,7 +171,7 @@ void draw() {
   updateTiming();
 
   printDebug();
-  
+   
 }
 
 
